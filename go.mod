@@ -1,0 +1,1 @@
+module product-recommendations-go
