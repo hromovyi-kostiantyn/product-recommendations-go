@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hromovyi-kostiantyn.github.io/product-recommendations-go/sitemap.xml
