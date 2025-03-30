@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інформаційна система формування продуктових рекомендацій</title>
+    <meta name="description" content="Бакалаврська робота присвячена розробці системи рекомендацій продуктів на основі методів машинного навчання">
+    <meta name="keywords" content="рекомендаційні системи, машинне навчання, колаборативна фільтрація, Go, бакалаврська робота">
+    <meta name="author" content="Громовий Костянтин">
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+</head>
+<body>
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ScholarlyArticle",
+        "name": "Інформаційна система формування продуктових рекомендацій на основі методів машинного навчання",
+        "author": {
+            "@type": "Person",
+            "name": "Громовий Костя"
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "Рекомендаційні системи"
+        },
+        "datePublished": "2025-06",
+        "keywords": "рекомендаційні системи, машинне навчання, колаборативна фільтрація",
+        "description": "Бакалаврська робота присвячена розробці системи рекомендацій продуктів на основі методів машинного навчання."
+    }
+</script>
+
+<header class="header">
+    <div class="container">
+        <div class="header__logo">
+            <img src="images/university-logo.svg" alt="Логотип університету" width="120" height="60">
+        </div>
+        <h1 class="header__title">Інформаційна система формування продуктових рекомендацій на основі методів машинного навчання</h1>
+        <p class="header__subtitle">Product Recommendation System Based on Machine Learning Methods</p>
+    </div>
+</header>
+
+<main>
+    <!-- Секція опису -->
+    <section class="intro" id="intro">
+        <div class="container">
+            <h2>Про роботу</h2>
+            <p class="intro__description">
+                Бакалаврська робота присвячена розробці інформаційної системи формування рекомендацій для інтернет-магазинів на основі методів машинного навчання. Система аналізує поведінку користувачів, їх вподобання та історію покупок для створення персоналізованих пропозицій товарів.
+            </p>
+            <div class="keywords">
+                <h3>Ключові слова</h3>
+                <ul class="keywords__list">
+                    <li>Рекомендаційні системи</li>
+                    <li>Машинне навчання</li>
+                    <li>Колаборативна фільтрація</li>
+                    <li>Контентна фільтрація</li>
+                    <li>Гібридні алгоритми</li>
+                    <li>Персоналізація</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секція актуальності -->
+    <section class="relevance" id="relevance">
+        <div class="container">
+            <h2>Актуальність дослідження</h2>
+            <p>
+                В умовах стрімкого розвитку електронної комерції та зростання обсягу доступних онлайн-товарів, користувачі все частіше стикаються з проблемою вибору серед тисяч схожих продуктів. Рекомендаційні системи є ключовим інструментом для вирішення цієї проблеми, допомагаючи користувачам знаходити товари, які найкраще відповідають їхнім потребам.
+            </p>
+            <p>
+                За даними досліджень, ефективні рекомендаційні системи здатні:
+            </p>
+            <ul>
+                <li>Підвищити конверсію продажів на 15-30%</li>
+                <li>Збільшити середній чек покупки на 20%</li>
+                <li>Покращити утримання клієнтів на 25%</li>
+            </ul>
+            <p>
+                Розробка ефективної системи рекомендацій дозволить інтернет-магазинам підвищити конкурентоспроможність та значно покращити задоволеність користувачів.
+            </p>
+        </div>
+    </section>
+
+    <!-- Секція мети та завдань -->
+    <section class="purpose" id="purpose">
+        <div class="container">
+            <h2>Мета та завдання</h2>
+            <div class="purpose__goal">
+                <h3>Мета дослідження</h3>
+                <p>
+                    Розробка та реалізація інформаційної системи для формування персоналізованих рекомендацій товарів на основі аналізу вподобань користувачів з використанням алгоритмів машинного навчання.
+                </p>
+            </div>
+            <div class="purpose__tasks">
+                <h3>Завдання дослідження</h3>
+                <ol>
+                    <li>Провести аналіз існуючих методів та алгоритмів побудови рекомендаційних систем.</li>
+                    <li>Розробити архітектуру інформаційної системи з використанням сучасних технологій.</li>
+                    <li>Реалізувати гібридний алгоритм рекомендацій, що поєднує методи колаборативної та контентної фільтрації.</li>
+                    <li>Створити зручний API для інтеграції з існуючими системами електронної комерції.</li>
+                    <li>Провести тестування та оцінку ефективності розробленої системи на реальних даних.</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секція методології -->
+    <section class="methodology" id="methodology">
+        <div class="container">
+            <h2>Методологія дослідження</h2>
+            <p>
+                У роботі використовується комплексний підхід, що поєднує методи аналізу даних, машинного навчання та програмної інженерії:
+            </p>
+            <div class="methodology__methods">
+                <div class="method-card">
+                    <h3>Колаборативна фільтрація</h3>
+                    <p>Аналіз вподобань схожих користувачів для формування рекомендацій.</p>
+                </div>
+                <div class="method-card">
+                    <h3>Контентна фільтрація</h3>
+                    <p>Рекомендації на основі характеристик товарів та категоріальних переваг користувача.</p>
+                </div>
+                <div class="method-card">
+                    <h3>Гібридний підхід</h3>
+                    <p>Поєднання різних методів для підвищення якості рекомендацій.</p>
+                </div>
+            </div>
+            <p>
+                Для розробки системи використовується мова програмування Go, база даних PostgreSQL та сучасні підходи до розробки мікросервісів.
+            </p>
+        </div>
+    </section>
+
+    <!-- Секція очікуваних результатів -->
+    <section class="results" id="results">
+        <div class="container">
+            <h2>Очікувані результати</h2>
+            <p>
+                В результаті виконання бакалаврської роботи планується отримати:
+            </p>
+            <ul class="results__list">
+                <li>
+                    <strong>Повнофункціональну систему рекомендацій</strong> з відкритим API, готову до інтеграції з існуючими інтернет-магазинами.
+                </li>
+                <li>
+                    <strong>Реалізацію гібридного алгоритму</strong>, який демонструє кращу точність порівняно з класичними підходами.
+                </li>
+                <li>
+                    <strong>Документацію та рекомендації</strong> щодо налаштування та оптимізації системи для різних типів даних та сценаріїв використання.
+                </li>
+                <li>
+                    <strong>Аналіз ефективності</strong> розробленої системи на реальних даних.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Секція візуалізації -->
+    <section class="visualization" id="visualization">
+        <div class="container">
+            <h2>Візуалізація проєкту</h2>
+            <div class="visualization__image">
+                <img src="images/recommendation-system-diagram.png" alt="Діаграма архітектури рекомендаційної системи" width="800" height="500">
+            </div>
+            <p class="visualization__caption">
+                Архітектура розробленої рекомендаційної системи
+            </p>
+        </div>
+    </section>
+
+    <!-- Контактна інформація -->
+    <footer class="footer">
+        <div class="container">
+            <div class="contact">
+                <h2>Контактна інформація</h2>
+                <p>Автор: Громовий Костянтин</p>
+                <p>Email: kostiantyn.hromovyi@student.sumdu.edu.ua</p>
+                <p>GitHub: <a href="https://github.com/hromovyi-kostiantyn" target="_blank" rel="noopener">github.com/hromovyi-kostiantyn</a></p>
+            </div>
+            <div class="footer__links">
+                <a href="#" class="btn" target="_blank" rel="noopener">Переглянути повний текст роботи</a>
+                <a href="https://github.com/hromovyi-kostiantyn/product-recommendations-go" class="btn btn--secondary" target="_blank" rel="noopener">Переглянути код проєкту</a>
+            </div>
+            <p class="copyright">&copy; 2025 Костянтин Громовий. Всі права захищено.</p>
+        </div>
+    </footer>
+</main>
+</body>
+</html>
