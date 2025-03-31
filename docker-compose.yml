@@ -8,12 +8,12 @@ services:
     depends_on:
       - postgres
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=recommendations
-      - APP_PORT=8080
+      - DB_HOST='${DB_HOST}'
+      - DB_PORT='${DB_PORT}'
+      - DB_USER='${DB_USER}'
+      - DB_PASSWORD='${DB_PASSWORD}'
+      - DB_NAME='${DB_NAME}'
+      - APP_PORT='${APP_PORT}'
     networks:
       - app-network
     volumes:
@@ -24,9 +24,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=recommendations
+      - POSTGRES_USER='${DB_USER}'
+      - POSTGRES_PASSWORD='${DB_PASSWORD}'
+      - POSTGRES_DB='${DB_PASSWORD}'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
@@ -45,11 +45,11 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=recommendations
+      - DB_HOST='${DB_HOST}'
+      - DB_PORT='${DB_PORT}'
+      - DB_USER='${DB_USER}'
+      - DB_PASSWORD='${DB_PASSWORD}'
+      - DB_NAME='${DB_NAME}'
     networks:
       - app-network
     command: ["go", "run", "migrations/migrate.go"]
@@ -61,11 +61,11 @@ services:
 #    depends_on:
 #      - migration
 #    environment:
-#      - DB_HOST=postgres
-#      - DB_PORT=5432
-#      - DB_USER=postgres
-#      - DB_PASSWORD=postgres
-#      - DB_NAME=recommendations
+#      - DB_HOST='${DB_HOST}'
+#      - DB_PORT='${DB_PORT}'
+#      - DB_USER='${DB_USER}'
+#      - DB_PASSWORD='${DB_PASSWORD}'
+#      - DB_NAME='${DB_NAME}'
 #    networks:
 #      - app-network
 #    command: ["go", "run", "scripts/seed.go"]
