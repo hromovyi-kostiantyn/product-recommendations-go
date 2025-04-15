@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// UserLike представляє зв'язок між користувачем та продуктом, який йому подобається
 type UserLike struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	UserID    uint      `gorm:"index:idx_user_product,unique;not null" json:"user_id"`

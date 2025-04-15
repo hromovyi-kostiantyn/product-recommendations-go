@@ -1,7 +1,9 @@
+// Package main entry point for the application
 package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -54,9 +56,13 @@ func main() {
 	api.HandleFunc("/recommendations", c.RecommendationHandler.GetRecommendations).Methods("GET")
 
 	// Перевірка стану сервісу (без аутентифікації)
-	r.HandleFunc("/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/api/v1/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":"ok"}`))
+		_, err := w.Write([]byte(`{"status":"ok"}`))
+		if err != nil {
+			log.Println("Error writing response:", err)
+			return
+		}
 	}).Methods("GET")
 
 	// Налаштування сервера
@@ -72,7 +78,7 @@ func main() {
 	// Запуск сервера в окремій горутині
 	go func() {
 		log.Printf("Server starting on port %s", port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()

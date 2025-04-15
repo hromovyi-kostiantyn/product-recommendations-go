@@ -1,3 +1,4 @@
+// Package service надає реалізацію сервісу аутентифікації
 package service
 
 import (
@@ -78,9 +79,44 @@ func (s *authService) Login(ctx context.Context, email, password string) (string
 	return tokenString, nil
 }
 
-func (s *authService) Logout(ctx context.Context, token string) error {
-	// Для простого JWT досить не зберігати токен на стороні клієнта
-	// В реальному проєкті можна додати токен до чорного списку
+func (s *authService) Logout(_ context.Context, token string) error {
+	// Parse the token to extract expiration time
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(s.jwtSecret), nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// Ensure the token is valid
+	if !parsedToken.Valid {
+		return errors.New("invalid token")
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return errors.New("invalid token claims")
+	}
+
+	// Get expiration time
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		return errors.New("invalid exp claim")
+	}
+
+	expiresAt := time.Unix(int64(exp), 0)
+
+	// For a complete implementation, you would:
+	// 1. Add this token to a blacklist storage (Redis/DB)
+	// 2. Set the blacklist entry to expire at the token's expiration time
+	// 3. Check the blacklist in ParseToken before validating tokens
+
+	// Placeholder return until blacklist storage is implemented
+	_ = expiresAt // Avoid unused variable warning
 	return nil
 }
 

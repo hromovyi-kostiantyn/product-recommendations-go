@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Product представляє продукт в системі
 type Product struct {
 	ID          uint           `gorm:"primaryKey" json:"id"`
 	Name        string         `gorm:"not null" json:"name"`

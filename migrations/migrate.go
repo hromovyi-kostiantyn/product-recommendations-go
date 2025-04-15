@@ -1,3 +1,4 @@
+// Package migrations
 package main
 
 import (
