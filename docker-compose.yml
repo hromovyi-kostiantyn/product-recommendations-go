@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   api:
     build:
@@ -8,71 +10,62 @@ services:
     depends_on:
       - postgres
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=recommendations
-      - APP_PORT=8080
-    networks:
-      - app-network
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - APP_PORT=${APP_PORT}
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
       - .:/app
+    restart: unless-stopped
 
   postgres:
     image: postgres:16-alpine
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=recommendations
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   migration:
     build:
       context: .
       dockerfile: docker/migration/Dockerfile
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=recommendations
-    networks:
-      - app-network
-    command: ["go", "run", "migrations/migrate.go"]
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
 
 #  seeder:
 #    build:
 #      context: .
 #      dockerfile: docker/seed/Dockerfile
 #    depends_on:
+#      - postgres
 #      - migration
 #    environment:
-#      - DB_HOST=postgres
-#      - DB_PORT=5432
-#      - DB_USER=postgres
-#      - DB_PASSWORD=postgres
-#      - DB_NAME=recommendations
-#    networks:
-#      - app-network
-#    command: ["go", "run", "scripts/seed.go"]
-
-networks:
-  app-network:
-    driver: bridge
+#      - DB_HOST=${DB_HOST}
+#      - DB_PORT=${DB_PORT}
+#      - DB_USER=${DB_USER}
+#      - DB_PASSWORD=${DB_PASSWORD}
+#      - DB_NAME=${DB_NAME}
+#
+#  lint:
+#    image: golangci/golangci-lint:v1.57.0
+#    volumes:
+#      - .:/app
+#    working_dir: /app
+#    command: golangci-lint run ./...
 
 volumes:
-  postgres-data:
+  postgres_data:

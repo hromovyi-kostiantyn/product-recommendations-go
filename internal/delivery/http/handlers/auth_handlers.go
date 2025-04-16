@@ -1,12 +1,15 @@
+// Package handlers implements HTTP handlers for the application
 package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"product-recommendations-go/internal/models"
 	"product-recommendations-go/internal/service"
 )
 
+// AuthHandler реалізує обробку запитів аутентифікації
 type AuthHandler struct {
 	authService service.AuthService
 }
@@ -32,6 +35,7 @@ type authResponse struct {
 	Token string `json:"token"`
 }
 
+// Register обробляє запит на реєстрацію нового користувача
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -51,9 +55,13 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(`{"message":"User registered successfully"}`))
+	_, err = w.Write([]byte(`{"message":"User registered successfully"}`))
+	if err != nil {
+		log.Printf("Error in response: %v", err)
+	}
 }
 
+// Login обробляє запит на вхід користувача
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -72,9 +80,14 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Error JSON decode", http.StatusInternalServerError)
+		log.Printf("Error JSON: %v", err)
+		return
+	}
 }
 
+// Logout обробляє запит на вихід користувача
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// Отримання токена з заголовка Authorization
 	token := r.Header.Get("Authorization")
@@ -95,5 +108,8 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"Logged out successfully"}`))
+	_, err = w.Write([]byte(`{"message":"Logged out successfully"}`))
+	if err != nil {
+		log.Printf("Error in response: %v", err)
+	}
 }

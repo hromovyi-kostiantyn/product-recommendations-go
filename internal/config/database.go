@@ -1,3 +1,4 @@
+// Package config represent the configuration settings for the application
 package config
 
 import (
@@ -60,8 +61,10 @@ func CloseDB() {
 			log.Printf("Error getting DB instance: %v", err)
 			return
 		}
-		// TODO handle error
-		sqlDB.Close()
+
+		if err := sqlDB.Close(); err != nil {
+			log.Printf("BD connection error: %v", err)
+		}
 		instance = nil
 		log.Println("Database connection closed")
 	}
