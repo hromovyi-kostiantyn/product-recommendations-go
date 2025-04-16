@@ -65,11 +65,33 @@ jobs:
           mkdir -p docs/code
           TEMP_DIR=$(mktemp -d)
           cd ${TEMP_DIR}
+          
+          # Clone the repo directly instead of using go get
+          git clone https://github.com/hromovyi-kostiantyn/product-recommendations-go.git
+          cd product-recommendations-go
+          git checkout ${GITHUB_SHA}
+          
+          # Go back to temp dir
+          cd ..
+          
+          # Initialize a module for pkgsite
           go mod init example.com/docs
-          go get github.com/hromovyi-kostiantyn/product-recommendations-go@${GITHUB_SHA}
+          # Add a replace directive to use the local copy instead of trying to download
+          echo "replace github.com/hromovyi-kostiantyn/product-recommendations-go => ./product-recommendations-go" >> go.mod
+          go mod tidy
+          
+          # Generate the documentation
           mkdir -p site
-          pkgsite -dir=site -open=false github.com/hromovyi-kostiantyn/product-recommendations-go
-          cp -r site/* ../../docs/code/
+          pkgsite -dir=site -open=false ./product-recommendations-go
+          
+          # Copy the generated docs
+          if [ -d "site" ] && [ "$(ls -A site)" ]; then
+            cp -r site/* ../../docs/code/
+          else
+            echo "# Code Documentation" > ../../docs/code/README.md
+            echo "Documentation generation failed. Please check the repository structure." >> ../../docs/code/README.md
+          fi
+          
           cd ../../
 
       - name: Setup Pages
