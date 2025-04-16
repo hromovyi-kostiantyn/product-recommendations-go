@@ -48,9 +48,17 @@ jobs:
       - name: Generate API documentation
         run: |
           mkdir -p docs/api
-          cp docs/openapi.yaml docs/api/
-          openapi-generator-cli generate -i docs/openapi.yaml -g html2 -o docs/api/html
-          openapi-generator-cli generate -i docs/openapi.yaml -g markdown -o docs/api/markdown
+          if [ -f "docs/openapi.yaml" ]; then
+            cp docs/openapi.yaml docs/api/
+            openapi-generator-cli generate -i docs/openapi.yaml -g html2 -o docs/api/html
+            openapi-generator-cli generate -i docs/openapi.yaml -g markdown -o docs/api/markdown
+            echo "OpenAPI documentation generated successfully"
+          else
+            echo "No OpenAPI specification found at docs/openapi.yaml. Skipping OpenAPI documentation generation."
+            # Create a placeholder file to ensure the directory isn't empty
+            echo "# API Documentation" > docs/api/README.md
+            echo "OpenAPI specification file not found." >> docs/api/README.md
+          fi
 
       - name: Generate code documentation
         run: |
