@@ -33,6 +33,7 @@ type OrderService interface {
 	GetUserOrders(ctx context.Context, userID uint) ([]*models.Order, error)
 }
 
+// RecommendationService інтерфейс для роботи з рекомендаціями
 type RecommendationService interface {
 	GetRecommendations(ctx context.Context, userID uint, limit int) ([]*models.ProductRecommendation, error)
 }

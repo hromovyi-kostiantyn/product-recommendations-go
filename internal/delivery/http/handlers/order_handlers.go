@@ -9,6 +9,7 @@ import (
 	"strconv"
 )
 
+// OrderHandler реалізує обробку запитів замовлень
 type OrderHandler struct {
 	orderService service.OrderService
 }
@@ -66,13 +67,17 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// Повертаємо успішну відповідь
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(struct {
+	err := json.NewEncoder(w).Encode(struct {
 		OrderID uint   `json:"order_id"`
 		Message string `json:"message"`
 	}{
 		OrderID: order.ID,
 		Message: "Order created successfully",
 	})
+	if err != nil {
+		http.Error(w, "Error JSON encode", http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetOrderByID повертає замовлення за ID
@@ -101,7 +106,11 @@ func (h *OrderHandler) GetOrderByID(w http.ResponseWriter, r *http.Request) {
 
 	// Повертаємо JSON-відповідь
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(order)
+	err = json.NewEncoder(w).Encode(order)
+	if err != nil {
+		http.Error(w, "Error JSON encode", http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetUserOrders повертає всі замовлення користувача
@@ -122,9 +131,13 @@ func (h *OrderHandler) GetUserOrders(w http.ResponseWriter, r *http.Request) {
 
 	// Повертаємо JSON-відповідь
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(struct {
+	err = json.NewEncoder(w).Encode(struct {
 		Orders []*models.Order `json:"orders"`
 	}{
 		Orders: orders,
 	})
+	if err != nil {
+		http.Error(w, "Error JSON encode", http.StatusInternalServerError)
+		return
+	}
 }

@@ -1,0 +1,47 @@
+# Required version field
+version: "2"
+
+# Linters configuration
+linters:
+  # We'll use the default set and enable a few additional ones
+  enable:
+    - errcheck      # Already enabled by default - Checks for unchecked errors
+    - govet         # Already enabled by default - Examines Go source code for errors
+    - ineffassign   # Already enabled by default - Detects ineffectual assignments
+    - staticcheck   # Already enabled by default - Static analysis checks
+    - unused        # Already enabled by default - Checks for unused code
+    - gosec         # Inspects source code for security problems
+    - misspell      # Finds misspelled words
+    - revive        # Drop-in replacement for golint
+
+# Linter settings
+linters-settings:
+  goimports:
+    local-prefixes: github.com/hromovyi-kostiantyn/product-recommendations-go
+  gosec:
+    excludes:
+      - G104  # Ignore errors about unchecked errors when closing files
+
+# Issues configuration
+issues:
+  # No limits on issues
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  # Exclude specific issues
+  exclusions:
+    rules:
+      # Exclude some linters from running on tests files
+      - path: _test\.go
+        linters:
+          - errcheck
+
+# Run configuration
+run:
+  # Timeout for analysis
+  timeout: 5m
+  # Skip directories
+  skip-dirs:
+    - scripts
+  # Skip files
+  skip-files:
+    - ".*\\.pb\\.go$"  # Skip protobuf generated files
