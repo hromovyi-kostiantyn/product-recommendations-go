@@ -1,5 +1,6 @@
 package models
 
+// OrderItem представляє товар в замовленні
 type OrderItem struct {
 	ID        uint    `gorm:"primaryKey" json:"id"`
 	OrderID   uint    `gorm:"index;not null" json:"order_id"`

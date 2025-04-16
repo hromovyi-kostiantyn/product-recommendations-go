@@ -1,3 +1,4 @@
+// Package repository реалізація інтерфейсів для роботи з базою даних
 package repository
 
 import (

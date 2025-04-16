@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// RecommendationHandler реалізує обробку запитів рекомендацій
 type RecommendationHandler struct {
 	recommendationService service.RecommendationService
 }
@@ -42,9 +43,13 @@ func (h *RecommendationHandler) GetRecommendations(w http.ResponseWriter, r *htt
 
 	// Повертаємо JSON-відповідь
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(struct {
+	err = json.NewEncoder(w).Encode(struct {
 		Recommendations []*models.ProductRecommendation `json:"recommendations"`
 	}{
 		Recommendations: recommendations,
 	})
+	if err != nil {
+		http.Error(w, "Error JSON encode", http.StatusInternalServerError)
+		return
+	}
 }

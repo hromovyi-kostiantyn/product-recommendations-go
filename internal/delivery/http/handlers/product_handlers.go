@@ -3,12 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"product-recommendations-go/internal/models"
 	"product-recommendations-go/internal/service"
 	"strconv"
 )
 
+// ProductHandler реалізує обробку запитів продуктів
 type ProductHandler struct {
 	productService service.ProductService
 }
@@ -48,7 +50,11 @@ func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	// Повертаємо JSON-відповідь
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Error decode JSON", http.StatusInternalServerError)
+		log.Printf("Error JSON: %v", err)
+		return
+	}
 }
 
 // GetByID повертає продукт за ID
@@ -75,5 +81,9 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	// Повертаємо JSON-відповідь
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	err = json.NewEncoder(w).Encode(product)
+	if err != nil {
+		log.Println("Error JSON encode:", err)
+		return
+	}
 }

@@ -1,3 +1,4 @@
+// Package seed
 package main
 
 import (
@@ -34,7 +35,6 @@ func main() {
 
 	// Створення тестових товарів
 	categories := []string{"Electronics", "Clothing", "Books", "Home", "Sports"}
-	var products []models.Product
 
 	for i := 1; i <= 50; i++ {
 		product := models.Product{
@@ -44,7 +44,6 @@ func main() {
 			Category:    categories[i%len(categories)],
 			ImageURL:    fmt.Sprintf("https://example.com/images/product%d.jpg", i),
 		}
-		products = append(products, product)
 		db.Create(&product)
 	}
 
@@ -55,26 +54,26 @@ func main() {
 	db.First(&user3, 3)
 
 	// Користувач 1 лайкає перші 10 товарів
-	for i := 1; i <= 10; i++ {
+	for i := uint(1); i <= 10; i++ {
 		db.Create(&models.UserLike{
 			UserID:    user1.ID,
-			ProductID: uint(i),
+			ProductID: i,
 		})
 	}
 
 	// Користувач 2 лайкає товари з 5 по 15
-	for i := 5; i <= 15; i++ {
+	for i := uint(5); i <= 15; i++ {
 		db.Create(&models.UserLike{
 			UserID:    user2.ID,
-			ProductID: uint(i),
+			ProductID: i,
 		})
 	}
 
 	// Користувач 3 лайкає товари з 10 по 20
-	for i := 10; i <= 20; i++ {
+	for i := uint(10); i <= 20; i++ {
 		db.Create(&models.UserLike{
 			UserID:    user3.ID,
-			ProductID: uint(i),
+			ProductID: i,
 		})
 	}
 
