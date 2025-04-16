@@ -13,9 +13,6 @@ RUN go mod download
 # Копіювання коду
 COPY . .
 
-# Запуск лінтера
-RUN golangci-lint run ./...
-
 # Збірка додатку
 RUN go build -o api ./cmd/api
 

@@ -1,0 +1,701 @@
+openapi: 3.0.3
+info:
+  title: API системи рекомендацій продуктів
+  description: |-
+    Цей документ описує API для системи рекомендацій продуктів, 
+    яка дозволяє користувачам реєструватися, авторизуватися, переглядати каталог товарів, 
+    додавати товари до вподобань, здійснювати замовлення та отримувати персоналізовані рекомендації.
+  version: 1.0.0
+  contact:
+    name: Громовий Костянтин
+    email: kostiantyn.hromovyi@example.com
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Локальний сервер розробки
+
+tags:
+  - name: auth
+    description: Операції аутентифікації
+  - name: products
+    description: Операції з товарами
+  - name: likes
+    description: Операції з вподобаннями
+  - name: orders
+    description: Операції з замовленнями
+  - name: recommendations
+    description: Операції з рекомендаціями
+  - name: health
+    description: Перевірка статусу сервісу
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Реєстрація нового користувача
+      description: Створює нового користувача з наданим email та паролем
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Користувач успішно зареєстрований
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Некоректні дані запиту
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Користувач з таким email вже існує
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Вхід у систему
+      description: Автентифікує користувача та повертає JWT токен
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успішна автентифікація
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Некоректні дані запиту
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неправильний email або пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Вихід із системи
+      description: Інвалідує JWT токен користувача
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успішний вихід
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout successful
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products:
+    get:
+      tags:
+        - products
+      summary: Отримання списку товарів
+      description: Повертає список товарів з підтримкою пагінації
+      operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          description: Номер сторінки (починається з 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Максимальна кількість товарів на сторінці
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: category
+          in: query
+          description: Фільтр за категорією товару
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успішно отримано список товарів
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  total:
+                    type: integer
+                    description: Загальна кількість товарів
+                  page:
+                    type: integer
+                    description: Поточна сторінка
+                  pages:
+                    type: integer
+                    description: Загальна кількість сторінок
+        '400':
+          description: Некоректні параметри запиту
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: Отримання інформації про товар
+      description: Повертає детальну інформацію про конкретний товар
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          description: ID товару
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішно отримано інформацію про товар
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Товар не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /likes:
+    get:
+      tags:
+        - likes
+      summary: Отримання списку вподобаних товарів
+      description: Повертає список товарів, які користувач додав до вподобань
+      operationId: getUserLikes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успішно отримано список вподобаних товарів
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /likes/{product_id}:
+    post:
+      tags:
+        - likes
+      summary: Додавання товару до вподобань
+      description: Додає товар до списку вподобань користувача
+      operationId: addLike
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product_id
+          in: path
+          description: ID товару
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Товар успішно додано до вподобань
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product added to likes
+        '400':
+          description: Некоректний ID товару
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Товар не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Товар вже додано до вподобань
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - likes
+      summary: Видалення товару з вподобань
+      description: Видаляє товар зі списку вподобань користувача
+      operationId: removeLike
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product_id
+          in: path
+          description: ID товару
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Товар успішно видалено з вподобань
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product removed from likes
+        '400':
+          description: Некоректний ID товару
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Товар не знайдено у вподобаннях
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders:
+    post:
+      tags:
+        - orders
+      summary: Створення нового замовлення
+      description: Створює нове замовлення з вказаними товарами
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+      responses:
+        '201':
+          description: Замовлення успішно створено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order_id:
+                    type: integer
+                    format: int64
+                    description: ID створеного замовлення
+                  status:
+                    type: string
+                    example: created
+        '400':
+          description: Некоректні дані запиту
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Один або кілька товарів не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - orders
+      summary: Отримання списку замовлень
+      description: Повертає список замовлень користувача
+      operationId: getUserOrders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успішно отримано список замовлень
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}:
+    get:
+      tags:
+        - orders
+      summary: Отримання інформації про замовлення
+      description: Повертає детальну інформацію про конкретне замовлення
+      operationId: getOrderById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID замовлення
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успішно отримано інформацію про замовлення
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Доступ заборонено (замовлення належить іншому користувачу)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Замовлення не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /recommendations:
+    get:
+      tags:
+        - recommendations
+      summary: Отримання персоналізованих рекомендацій
+      description: Повертає персоналізовані рекомендації товарів для користувача
+      operationId: getRecommendations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Максимальна кількість рекомендацій
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Успішно отримано рекомендації
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          description: Неавторизований запит
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /recommendations/popular:
+    get:
+      tags:
+        - recommendations
+      summary: Отримання популярних товарів
+      description: Повертає список популярних товарів
+      operationId: getPopularProducts
+      parameters:
+        - name: limit
+          in: query
+          description: Максимальна кількість популярних товарів
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Успішно отримано список популярних товарів
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /health:
+    get:
+      tags:
+        - health
+      summary: Перевірка статусу сервісу
+      description: Повертає інформацію про статус сервісу
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Сервіс працює нормально
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 1.0.0
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2025-03-30T12:34:56Z'
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+
+    TokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Смартфон XYZ
+        description:
+          type: string
+          example: Потужний смартфон з 6.5" дисплеєм та 8 ГБ оперативної пам'яті
+        price:
+          type: number
+          format: float
+          example: 12999.99
+        category:
+          type: string
+          example: electronics
+        image_url:
+          type: string
+          format: uri
+          example: https://example.com/images/product1.jpg
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-03-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-03-20T14:15:00Z'
+
+    OrderItem:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          format: int64
+          example: 1
+        product_name:
+          type: string
+          example: Смартфон XYZ
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        price:
+          type: number
+          format: float
+          example: 12999.99
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        status:
+          type: string
+          enum: [created, paid, shipped, delivered, cancelled]
+          example: created
+        total_price:
+          type: number
+          format: float
+          example: 25999.98
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-03-25T15:45:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-03-25T15:45:00Z'
+
+    OrderRequest:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - product_id
+              - quantity
+            properties:
+              product_id:
+                type: integer
+                format: int64
+                example: 1
+              quantity:
+                type: integer
+                minimum: 1
+                example: 2
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid request data
+        details:
+          type: string
+          example: Email is required
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

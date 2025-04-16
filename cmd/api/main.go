@@ -104,4 +104,5 @@ func main() {
 	config.CloseDB()
 
 	log.Println("Server stopped gracefully")
+
 }
